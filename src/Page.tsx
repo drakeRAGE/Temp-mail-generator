@@ -1,8 +1,4 @@
-
-
 import React, { useState, useEffect } from "react";
-// import "./styles.css";
-
 interface Message {
   id: number;
   from: string;
