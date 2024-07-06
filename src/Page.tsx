@@ -8,7 +8,9 @@ interface Message {
 }
 
 const Home: React.FC = () => {
-  const [del, setDelete] = useState(false);
+  // const [del, setDelete] = useState(false);
+
+
   const [email, setEmail] = useState("");
   const [messageData, setMessageData] = useState<Message[]>([]);
   const [username, setUsername] = useState("");
@@ -46,7 +48,7 @@ const Home: React.FC = () => {
     }
 
     getEmail();
-  }, [del]);
+  }, []);
 
   async function refreshMessage() {
     const res2 = await fetch(
