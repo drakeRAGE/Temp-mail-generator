@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
+
 interface Message {
   id: number;
   from: string;
   subject: string;
   date: string;
-  textBody?: string;
+  textBody: string;
+  htmlBody: string;
 }
 
 const Home: React.FC = () => {
   // const [del, setDelete] = useState(false);
-
-
   const [email, setEmail] = useState("");
   const [messageData, setMessageData] = useState<Message[]>([]);
   const [username, setUsername] = useState("");
@@ -74,9 +74,15 @@ const Home: React.FC = () => {
         `https://www.1secmail.com/api/v1/?action=readMessage&login=${username}&domain=${domain}&id=${d.id}`
       );
       const message = await res.json();
+      console.log("Fetched message:", message); 
       setMessageFrom(message.from);
-      setMessageTextBody(message.textBody);
       setMessageSubject(message.subject);
+      if (message.textBody.trim() === "") {
+        setMessageTextBody(message.htmlBody); // Use htmlBody if textBody is empty
+      } else {
+        setMessageTextBody(message.textBody);
+      }
+      
       setMessageShow(true);
     } catch (error) {
       console.log("Error reading message:", error);
@@ -106,7 +112,7 @@ const Home: React.FC = () => {
             Change Mail
           </button>
           <button className="refresh-button" onClick={refreshMessage}>
-            {/* <img
+             {/* <img
               src="/refresh.png"
               alt="Refresh Icon"
               className="refresh-icon"
@@ -145,10 +151,14 @@ const Home: React.FC = () => {
                 </p>
               </div>
               <div className="message-body">
-                <p>
-                  <strong>Body:</strong> {messageTextBody}
-                </p>
+                  <p><strong>Body:</strong></p>
+                  {messageTextBody.trim() === "" ? (
+                    <p>No content available.</p>
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: messageTextBody }}></div>
+                  )}
               </div>
+
             </div>
           </>
         ) : (
@@ -163,8 +173,7 @@ const Home: React.FC = () => {
               <span>{d.from}</span>
               <p>{d.subject}</p>
               <div>
-                <span>{d.textBody}</span>
-                <p>{d.date}</p>
+                <span>{d.date}</span>
               </div>
             </div>
           ))
