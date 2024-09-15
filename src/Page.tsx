@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Copy, Mail, ArrowLeft } from 'lucide-react';
 
-const TempMailGenerator = () => {
+interface Message {
+  id: number;
+  subject: string;
+  from: string;
+}
+
+interface MessageDetails {
+  from: string;
+  subject: string;
+  textBody: string;
+  htmlBody: string;
+}
+
+const TempMailGenerator: React.FC = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [domain, setDomain] = useState('');
-  const [messageData, setMessageData] = useState([]);
+  const [messageData, setMessageData] = useState<Message[]>([]);
   const [messageShow, setMessageShow] = useState(false);
   const [messageFrom, setMessageFrom] = useState('');
   const [messageSubject, setMessageSubject] = useState('');
@@ -49,19 +62,19 @@ const TempMailGenerator = () => {
     setMessageData(messages);
   }
 
-  function copyToClipboard(email) {
-    navigator.clipboard.writeText(email).then(() => {
+  function copyToClipboard(emailToCopy: string) {
+    navigator.clipboard.writeText(emailToCopy).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     });
   }
 
-  async function whichMessageClicked(d) {
+  async function whichMessageClicked(d: Message) {
     try {
       const res = await fetch(
         `https://www.1secmail.com/api/v1/?action=readMessage&login=${username}&domain=${domain}&id=${d.id}`
       );
-      const message = await res.json();
+      const message: MessageDetails = await res.json();
       setMessageFrom(message.from);
       setMessageSubject(message.subject);
       if (message.textBody.trim() === "") {
